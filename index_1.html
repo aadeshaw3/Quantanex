@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!--
+    QuantaNex — Single-file, multi-section website
+    - Hash-based router for subpages (#home, #about, #services, #technology, #careers, #blog, #manifesto, #contact)
+    - Responsive layout, accessible markup, SEO metadata, basic animations
+    - Self-contained: no external CSS/JS dependencies
+    Edit brand, colors, and content as needed. — Aadesh, this is yours.
+  -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>QuantaNex — Engineering Infrastructure That Thinks</title>
+  <meta name="description" content="QuantaNex Pvt. Ltd. delivers electrical contracting, industrial automation, and smart infrastructure with precision and purpose." />
+  <meta name="author" content="QuantaNex Pvt. Ltd." />
+  <meta name="theme-color" content="#0b1020" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="QuantaNex — Engineering Infrastructure That Thinks" />
+  <meta property="og:description" content="Electrical contracting, industrial automation, smart infrastructure, and design consulting." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://example.com/" />
+  <link rel="shortcut icon" href="Logo.jpg" type="image/x-icon">
+
+  <!-- Styles -->
+  <style>
+    :root{
+      --bg:#e9f3ff;          /* main background - soft blue */
+      --bg-2:#d4e7ff;        /* secondary background */
+      --card:#f7fbff;        /* card background */
+      --ink:#1b2430;         /* main text - dark ink */
+      --muted:#5f6c85;       /* muted text */
+      --accent:#3d6dff;      /* primary accent (blue) */
+      --accent-2:#3dd6b7;    /* secondary accent (teal) */
+      --warn:#ff9f40;        /* warning (orange) */
+      --danger:#ff4d4d;      /* danger (red) */
+      --shadow: 0 6px 20px rgba(0,0,0,.12);
+      --radius:14px;
+      --radius-sm:10px;
+      --radius-lg:22px;
+      --maxw:1200px;
+      --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Ubuntu,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+      --mono: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:var(--font);
+      color:var(--ink);
+      background:
+        radial-gradient(1200px 600px at 80% -20%, rgba(61,109,255,.15), transparent 60%),
+        radial-gradient(900px 600px at -10% 20%, rgba(61,214,183,.12), transparent 60%),
+        linear-gradient(180deg, var(--bg), var(--bg-2) 60%, #cce0ff);
+      background-attachment: fixed;
+      line-height:1.6;
+    }
+
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    /* Header */
+    header{
+      position:sticky; top:0; z-index:50;
+      backdrop-filter: saturate(160%) blur(10px);
+      background: rgba(255, 255, 255, .7);
+      border-bottom:1px solid rgba(0,0,0,.06);
+    }
+    .nav{
+      max-width:var(--maxw); margin:0 auto; display:flex; align-items:center; justify-content:space-between;
+      padding:14px 18px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px; font-weight:700; letter-spacing:.3px;
+    }
+    .brand-logo{
+      width:34px; height:34px; border-radius:10px;
+      /* background: conic-gradient(from 210deg, var(--accent), var(--accent-2)); */
+      box-shadow: 0 0 0 3px rgba(0,0,0,.04), 0 8px 20px rgba(61,109,255,.25);
+    }
+    nav ul{display:flex; gap:14px; list-style:none; padding:0; margin:0; align-items:center}
+    nav a{
+      display:inline-block; padding:8px 12px; border-radius:10px; color:var(--ink);
+    }
+    nav a.active, nav a:hover{
+      background:rgba(61,109,255,.12);
+      text-decoration:none;
+    }
+    .cta{
+      display:inline-flex; align-items:center; gap:8px;
+      background:linear-gradient(135deg, var(--accent), #5a82ff);
+      color:#fff; font-weight:700; border:none; border-radius:12px;
+      padding:10px 14px; cursor:pointer; box-shadow: var(--shadow);
+    }
+    .cta:hover{filter:brightness(1.05)}
+    .burger{display:none; background:none; border:none; color:var(--ink); font-size:22px; padding:8px; border-radius:10px}
+    .burger:focus{outline:2px solid var(--accent)}
+
+    /* Layout */
+    main{max-width:var(--maxw); margin:0 auto; padding:28px 18px 80px}
+    section.page{display:none; animation:fadeIn .35s ease both}
+    section.page.active{display:block}
+    @keyframes fadeIn{from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:translateY(0)}}
+
+    .hero{
+      display:grid; grid-template-columns: 1.2fr .8fr; gap:28px; align-items:center;
+      padding:30px; border:1px solid rgba(0,0,0,.06); border-radius:var(--radius-lg);
+      background:linear-gradient(180deg, rgba(255,255,255,.8), rgba(255,255,255,.7));
+      box-shadow: var(--shadow);
+      overflow:hidden; position:relative;
+    }
+    .hero::after{
+      content:""; position:absolute; inset:-120px -140px -120px auto; width:60%;
+      background: radial-gradient(400px 300px at 70% 30%, rgba(61,109,255,.15), transparent 60%),
+                  radial-gradient(600px 450px at 100% 100%, rgba(61,214,183,.12), transparent 60%);
+      pointer-events:none
+    }
+    .kpis{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:18px}
+    .kpi{
+      background:rgba(255,255,255,.9); border:1px solid rgba(0,0,0,.08); border-radius:14px; padding:14px
+    }
+    .muted{color:var(--muted)}
+    .chips{display:flex; gap:8px; flex-wrap:wrap}
+    .chip{
+      font-size:12px; color:#fff; background:linear-gradient(135deg, var(--accent-2), #6af7d0) !important;
+      padding:6px 10px; border-radius:999px; font-weight:700; letter-spacing:.2px
+    }
+
+    .grid{display:grid; gap:18px}
+    .grid.cols-3{grid-template-columns:repeat(3, 1fr)}
+    .grid.cols-2{grid-template-columns:repeat(2, 1fr)}
+    .card{
+      background: rgba(255,255,255,.9); border:1px solid rgba(0,0,0,.08);
+      border-radius: var(--radius); padding:18px; box-shadow: var(--shadow)
+    }
+    .card h3{margin-top:6px}
+    .icon{
+      width:38px; height:38px; border-radius:10px; display:inline-grid; place-items:center;
+      background:linear-gradient(135deg, rgba(61,109,255,.15), rgba(61,214,183,.15));
+      border:1px solid rgba(0,0,0,.08)
+    }
+
+    /* Sliders */
+    .slider{position:relative; overflow:hidden; border-radius:var(--radius)}
+    .slides{display:flex; transition:transform .4s ease}
+    .slide{min-width:100%; padding:18px}
+    .slider .nav{
+      position:absolute; inset:auto 10px 10px auto; gap:8px
+    }
+    .dot{
+      width:10px; height:10px; border-radius:50%;
+      background:rgba(0,0,0,.15); border:1px solid rgba(0,0,0,.25); cursor:pointer
+    }
+    .dot.active{background:var(--accent)}
+    .dots{
+        padding: 0px;
+    }
+    .tech-cards{
+      margin-bottom: 18px;
+    }
+
+
+    /* Blog & filters */
+    .filters{display:flex; gap:8px; flex-wrap:wrap; margin:8px 0 14px}
+    .pill{padding:6px 10px; border-radius:999px; border:1px solid rgba(0,0,0,.12); color:var(--ink); background:rgba(255,255,255,.8); cursor:pointer}
+    .pill.active, .pill:hover{border-color:var(--accent); background:rgba(61,109,255,.12)}
+    .search{width:100%; padding:10px 12px; border-radius:10px; border:1px solid rgba(0,0,0,.14); background:rgba(255,255,255,.9); color:var(--ink)}
+
+    /* Contact */
+    form .row{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+    label{display:block; font-size:14px; color:var(--muted); margin:8px 2px}
+    input, textarea, select{
+      width:100%; padding:10px 12px; border-radius:10px; border:1px solid rgba(0,0,0,.14);
+      background:rgba(255,255,255,.9); color:var(--ink); resize:vertical
+    }
+    button.primary{
+      background:linear-gradient(135deg, var(--accent), #5a82ff);
+      color:#fff; border:none; padding:10px 14px; border-radius:12px; cursor:pointer; font-weight:700
+    }
+    button.primary:hover{filter:brightness(1.05)}
+    .success{color:var(--accent-2)}
+    .error{color:var(--danger)}
+
+    /* Footer */
+    footer{
+      padding:40px 18px; background:rgba(255,255,255,.8); border-top:1px solid rgba(0,0,0,.06)
+    }
+    .foot{max-width:var(--maxw); margin:0 auto; display:grid; gap:20px; grid-template-columns: 2fr 1fr 1fr 1fr}
+    .small{font-size:13px; color:var(--muted)}
+
+    /* Reveal on scroll */
+    .reveal{opacity:0; transform: translateY(8px); transition: opacity .5s ease, transform .5s ease}
+    .reveal.visible{opacity:1; transform: none}
+
+    .showM{
+      display: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 980px){
+      .hero{grid-template-columns:1fr}
+      .kpis{grid-template-columns:1fr 1fr}
+      .grid.cols-3{grid-template-columns:1fr 1fr}
+      nav ul{display:none; position:absolute; right:10px; top:62px; background:#f0f6ff; padding:10px; border:1px solid rgba(0,0,0,.1); border-radius:12px; flex-direction:column; width:min(92vw, 360px)}
+      nav ul.open{display:flex}
+      .burger{display:inline-block}
+      .kpis{grid-template-columns:1fr}
+      .grid.cols-3,.grid.cols-2{grid-template-columns:1fr}
+      form .row{grid-template-columns:1fr}
+      .foot{grid-template-columns:1fr 1fr}
+      .hideM{
+        display: none;
+      }
+      .showM{
+        display: inline;
+      }
+      .chanegcolor{
+        color: var(--ink) !important;
+      }
+    }
+    @media (max-width: 420px){
+      .foot{grid-template-columns:1fr}
+    }
+    @media (max-width: 528px){
+      .view-width{
+        width: 80vw;
+      }
+    }
+  </style>
+
+
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"Organization",
+    "name":"QuantaNex Pvt. Ltd.",
+    "url":"https://example.com/",
+    "logo":"https://example.com/logo.png",
+    "description":"Electrical contracting, industrial automation, smart infrastructure, and design consulting.",
+    "address":{
+      "@type":"PostalAddress",
+      "addressLocality":"Chhatrapati Sambhaji Nagar",
+      "addressRegion":"Maharashtra",
+      "addressCountry":"IN"
+    },
+    "sameAs":[]
+  }
+  </script>
+</head>
+<body>
+  <header>
+    <div class="nav" role="navigation" aria-label="Primary">
+      <div class="brand">
+        <img src="Logo.jpg" class="brand-logo" alt="Description of SVG">
+        <div aria-label="QuantaNex home" style="font-size:18px">QuantaNex</div>
+      </div>
+      <nav>
+        <ul id="menu">
+          <li><a href="#home" data-route>Home</a></li>
+          <li><a href="#about" data-route>About</a></li>
+          <li><a href="#services" data-route>Services</a></li>
+          <li><a href="#technology" data-route>Technology</a></li>
+          <li><a href="#careers" data-route>Careers</a></li>
+          <li><a href="#blog" data-route>Blog</a></li>
+          <li><a href="#manifesto" data-route>Manifesto</a></li>
+          <li class="showM"><a class="cta chanegcolor" href="#contact" data-route aria-label="Partner with QuantaNex">Partner with QuantaNex ➜</a></li>
+        </ul>
+      </nav>
+      <button class="burger" aria-label="Open menu" id="burger">☰</button>
+      <a class="cta hideM" href="#contact" data-route aria-label="Partner with QuantaNex">Partner with QuantaNex ➜</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- HOME -->
+    <section id="home" class="page active" aria-labelledby="home-title">
+      <div class="hero reveal">
+        <div class="inter">
+          <h1 class="view-width" id="home-title" style="margin:0 0 8px">Engineering Infrastructure That Thinks</h1>
+          <p class="muted view-width" style="max-width:58ch">
+            QuantaNex delivers electrical contracting, industrial automation, and smart infrastructure with precision design, rigorous safety, and measurable outcomes.
+          </p>
+          <div class="chips view-width" style="margin:12px 0 4px">
+            <span class="chip">Electrical Contracting</span>
+            <span class="chip">PLC & SCADA</span>
+            <span class="chip">Smart Energy</span>
+            <span class="chip">AutoCAD & BOQ</span>
+          </div>
+          <div class="view-width" style="display:flex; gap:10px; margin-top:14px">
+            <a href="#services" data-route class="cta" aria-label="Explore services">Explore Services</a>
+            <a href="#careers" data-route class="cta" aria-label="Join as intern or professional">Join Our Team</a>
+          </div>
+          <div class="kpis view-width">
+            <div class="kpi">
+              <div class="muted" style="font-size:13px">Projects Delivered</div>
+              <div style="font-size:22px; font-weight:800">50+</div>
+            </div>
+            <div class="kpi">
+              <div class="muted" style="font-size:13px">Safety Incidents</div>
+              <div style="font-size:22px; font-weight:800; color:var(--accent-2)">Zero</div>
+            </div>
+            <div class="kpi">
+              <div class="muted" style="font-size:13px">Average Turnaround</div>
+              <div style="font-size:22px; font-weight:800">On Time</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="slider" id="caseSlider" aria-label="Client success highlights">
+            <div class="slides">
+              <div class="slide">
+                <h3>Smart Energy Retrofits</h3>
+                <p class="muted">IoT meters and EMS led to 18% energy savings in a mid-size plant with live dashboards and alerts.</p>
+              </div>
+              <div class="slide">
+                <h3>PLC Migration Without Downtime</h3>
+                <p class="muted">Upgraded legacy PLCs to modern architecture in phases to maintain throughput and safety.</p>
+              </div>
+              <div class="slide">
+                <h3>HT/LT Distribution Revamp</h3>
+                <p class="muted">Re-engineered SLDs, panels, and earthing to reduce faults and improve power quality.</p>
+              </div>
+            </div>
+            <div class="nav dots">
+              <button class="dot" aria-label="Slide 1"></button>
+              <button class="dot" aria-label="Slide 2"></button>
+              <button class="dot" aria-label="Slide 3"></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:24px" class="reveal">
+        <h2 style="margin:6px 0 12px">Trusted by teams that build</h2>
+        <div class="grid cols-3">
+          <div class="card" aria-label="Client logo">
+            <div class="icon" aria-hidden="true">
+              <!-- simple inline logo shape -->
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 12h16M4 6h10M4 18h10" stroke="currentColor" stroke-width="2"/></svg>
+            </div>
+            <div class="muted small">Manufacturing</div>
+            <div style="font-weight:700">Kaveri Engineering</div>
+          </div>
+          <div class="card" aria-label="Client logo">
+            <div class="icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/></svg>
+            </div>
+            <div class="muted small">FMCG</div>
+            <div style="font-weight:700">Rivera Foods</div>
+          </div>
+          <div class="card" aria-label="Client logo">
+            <div class="icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 18L18 6M6 6l12 12" stroke="currentColor" stroke-width="2"/></svg>
+            </div>
+            <div class="muted small">Logistics</div>
+            <div style="font-weight:700">Velocity Freight</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="page" aria-labelledby="about-title">
+      <h2 id="about-title" class="reveal">About QuantaNex</h2>
+      <div class="grid cols-2">
+        <div class="card reveal">
+          <h3>Origin</h3>
+          <p class="muted">
+            Born from a simple idea that make power systems smarter without making them fragile. QuantaNex blends practical electrical engineering with modern automation to deliver infrastructure that thinks.
+          </p>
+        </div>
+        <div class="card reveal">
+          <h3>Mission</h3>
+          <p class="muted">
+            To electrify industries with intelligent, safe, and efficient systems: designed clearly, executed cleanly, and measured honestly.
+          </p>
+        </div>
+        <div class="card reveal">
+          <h3>Leadership</h3>
+          <p class="muted">
+            Led by founder-director Aadesh, our team spans electrical design, BOQ estimation, AutoCAD, PLC/SCADA, and site execution. We invest in interns and emerging talent to build capability from the ground up.
+          </p>
+        </div>
+        <div class="card reveal">
+          <h3>Values</h3>
+          <ul class="muted" style="margin-top:0">
+            <li>Safety as a system, not a checklist</li>
+            <li>Clarity over jargon</li>
+            <li>Measurement over assumptions</li>
+            <li>Partnership over transactions</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card reveal" style="margin-top:18px">
+        <h3>Milestones</h3>
+        <ul class="muted" style="margin-top:0">
+          <li>Delivered 50+ projects across domestic, commercial, and industrial segments</li>
+          <li>Launched internship program to mentor interdisciplinary talent</li>
+          <li>Expanded services from contracting to automation and smart energy</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SERVICES -->
+    <section id="services" class="page" aria-labelledby="services-title">
+      <h2 id="services-title" class="reveal">Services</h2>
+      <div class="grid cols-2">
+        <div class="card reveal">
+          <div class="icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" stroke="currentColor" stroke-width="2"/></svg>
+          </div>
+          <h3>Electrical Contracting</h3>
+          <ul class="muted">
+            <li>HT/LT distribution, panels, and protection</li>
+            <li>Earthing and lightning protection</li>
+            <li>Lighting, cabling, and raceways</li>
+            <li>Testing, commissioning, and documentation</li>
+          </ul>
+        </div>
+        <div class="card reveal">
+          <div class="icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h10M4 17h16" stroke="currentColor" stroke-width="2"/></svg>
+          </div>
+          <h3>Industrial Automation</h3>
+          <ul class="muted">
+            <li>PLC programming and SCADA/HMI</li>
+            <li>VFDs, sensors, and control panels</li>
+            <li>Legacy migration and uptime planning</li>
+            <li>Data logging and alarms</li>
+          </ul>
+        </div>
+        <div class="card reveal">
+          <div class="icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 3v6l4 2" stroke="currentColor" stroke-width="2"/></svg>
+          </div>
+          <h3>Smart Infrastructure</h3>
+          <ul class="muted">
+            <li>IoT metering and energy management</li>
+            <li>Remote monitoring dashboards</li>
+            <li>Predictive maintenance hooks</li>
+            <li>Cyber-aware architectures</li>
+          </ul>
+        </div>
+        <div class="card reveal">
+          <div class="icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="14" rx="2" stroke="currentColor" stroke-width="2"/><path d="M7 21l5-4 5 4" stroke="currentColor" stroke-width="2"/></svg>
+          </div>
+          <h3>Consulting & Design</h3>
+          <ul class="muted">
+            <li>SLDs, load calculations, and BOQs</li>
+            <li>AutoCAD layouts and as-builts</li>
+            <li>Standards compliance and audits</li>
+            <li>Costing and value engineering</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card reveal" style="margin-top:18px">
+        <h3>How we deliver</h3>
+        <div class="grid cols-3">
+          <div>
+            <div class="muted small">01</div>
+            <div style="font-weight:700">Clarity</div>
+            <div class="muted">Clear scope, drawings, and milestones before site work begins.</div>
+          </div>
+          <div>
+            <div class="muted small">02</div>
+            <div style="font-weight:700">Control</div>
+            <div class="muted">QA checklists, site audits, and risk reviews built into delivery.</div>
+          </div>
+          <div>
+            <div class="muted small">03</div>
+            <div style="font-weight:700">Confidence</div>
+            <div class="muted">Handover docs, training, and post-commissioning support.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TECHNOLOGY -->
+    <section id="technology" class="page" aria-labelledby="tech-title">
+      <h2 id="tech-title" class="reveal">Technology</h2>
+      <div class="grid cols-2 tech-cards">
+        <div class="card reveal">
+          <h3>Stack</h3>
+          <ul class="muted">
+            <li>Design: AutoCAD, SLD workflows, BOQ toolsets</li>
+            <li>Automation: PLCs (Siemens, Allen-Bradley), SCADA/HMI</li>
+            <li>IoT: MQTT, Modbus, dashboards</li>
+            <li>QA: Testing instruments, logging, reports</li>
+          </ul>
+        </div>
+        <div class="card reveal">
+          <h3>R&D focus</h3>
+          <ul class="muted">
+            <li>Adaptive energy optimization</li>
+            <li>Data-driven maintenance cues</li>
+            <li>Interoperable control architectures</li>
+            <li>Human-centered visualizations</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card reveal">
+        <h3>Case studies</h3>
+        <div class="slider" id="techSlider" aria-label="Technology case studies">
+          <div class="slides">
+            <div class="slide">
+              <strong>EMS integration</strong>
+              <div class="muted">Unified meters across brands via Modbus gateway; consolidated analytics reduced peak demand costs.</div>
+            </div>
+            <div class="slide">
+              <strong>Controls upgrade</strong>
+              <div class="muted">Phased PLC changeover with IO mapping and dry runs to protect throughput.</div>
+            </div>
+            <div class="slide">
+              <strong>Quality & safety</strong>
+              <div class="muted">Thermal scans, relay tests, and earthing audits boosted reliability and compliance.</div>
+            </div>
+          </div>
+          <br>
+          <div class="nav" style="display:flex">
+            <button class="dot" aria-label="Slide 1"></button>
+            <button class="dot" aria-label="Slide 2"></button>
+            <button class="dot" aria-label="Slide 3"></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CAREERS -->
+    <section id="careers" class="page" aria-labelledby="careers-title">
+      <h2 id="careers-title" class="reveal">Careers</h2>
+      <div class="card reveal">
+        <h3>Internship program</h3>
+        <ul class="muted">
+          <li>Mentorship from project leads and real site exposure</li>
+          <li>Clear learning roadmap and weekly feedback</li>
+          <li>Certificate, recommendation, and pre-placement options</li>
+        </ul>
+        <p class="muted">We look for curiosity, clarity, and ownership. If that’s you, apply.</p>
+      </div>
+
+      <div class="grid cols-2" id="jobsList" style="margin-top:18px"></div>
+
+      <div class="card reveal" style="margin-top:18px">
+        <h3>Culture</h3>
+        <p class="muted">We balance precision with pace. We document, de-risk, and design for people who use the systems we build.</p>
+      </div>
+    </section>
+
+    <!-- BLOG -->
+    <section id="blog" class="page" aria-labelledby="blog-title">
+      <h2 id="blog-title" class="reveal">Blog</h2>
+      <input class="search reveal" type="search" id="blogSearch" placeholder="Search articles..." aria-label="Search blog" />
+      <div class="filters reveal" id="blogFilters"></div>
+      <div class="grid cols-2" id="blogList"></div>
+    </section>
+
+    <!-- MANIFESTO -->
+    <section id="manifesto" class="page" aria-labelledby="manifesto-title">
+      <h2 id="manifesto-title" class="reveal">Manifesto</h2>
+      <div class="card reveal">
+        <blockquote style="margin:0; font-size:18px; line-height:1.5">
+          “QuantaNex exists to engineer infrastructure that thinks. Power should be intelligent, adaptive, and accessible, built with logic and delivered with purpose.”
+        </blockquote>
+      </div>
+      <div class="grid cols-3" style="margin-top:18px">
+        <div class="card reveal">
+          <h3>People first</h3>
+          <p class="muted">Systems serve people. Interfaces must be clear; handovers must be kind.</p>
+        </div>
+        <div class="card reveal">
+          <h3>Measure what matters</h3>
+          <p class="muted">Energy, uptime, and safety: tracked and reported, not assumed.</p>
+        </div>
+        <div class="card reveal">
+          <h3>Earn trust</h3>
+          <p class="muted">Transparent estimates, traceable changes, and accountable delivery.</p>
+        </div>
+      </div>
+      <div class="card reveal" style="margin-top:18px">
+        <h3>Join the movement</h3>
+        <p class="muted">Whether you’re a facility head, a startup founder, or a student: bring your challenge. We’ll build something that lasts.</p>
+        <a class="cta" href="#contact" data-route>Start a conversation</a>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="page" aria-labelledby="contact-title">
+      <h2 id="contact-title" class="reveal">Contact Us</h2>
+      <div class="grid cols-2">
+        <div class="card reveal">
+          <h3>Let’s build</h3>
+          <form id="contactForm" novalidate>
+            <div class="row">
+              <div>
+                <label for="name">Your name</label>
+                <input id="name" name="name" type="text" required placeholder="Aadesh" />
+              </div>
+              <div>
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" required placeholder="you@company.com" />
+              </div>
+            </div>
+            <div class="row">
+              <div>
+                <label for="topic">Topic</label>
+                <select id="topic" name="topic">
+                  <option>Project inquiry</option>
+                  <option>Partnership</option>
+                  <option>Careers</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div>
+                <label for="phone">Phone</label>
+                <input id="phone" name="phone" type="tel" placeholder="+91-XXXXXXXXXX" />
+              </div>
+            </div>
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="5" required placeholder="Tell us about your project or question..."></textarea>
+            <div style="display:flex; gap:10px; align-items:center; margin-top:10px">
+              <button type="submit" class="primary">Send message</button>
+              <span id="formStatus" class="small muted" role="status" aria-live="polite"></span>
+            </div>
+          </form>
+        </div>
+        <div class="card reveal">
+          <h3>Details</h3>
+          <p class="muted" style="margin-top:0">
+            QuantaNex Pvt. Ltd.<br/>
+            Chhatrapati Sambhaji Nagar, Maharashtra, India
+          </p>
+          <p class="muted">
+            Email: <a href="mailto:adesh@quantanex.co.in">adesh@quantanex.co.in</a><br/>
+            Phone: <a href="tel:+918329941680">+91 8329941680</a>
+          </p>
+          <div class="small muted">We typically respond within 1 business day.</div>
+          <div class="card" style="margin-top:12px; background:rgba(126,249,198,.05)">
+            <h4 style="margin-top:0">FAQs</h4>
+            <details>
+              <summary>Do you take small projects?</summary>
+              <div class="muted">Yes, if the problem is interesting and the impact is clear.</div>
+            </details>
+            <details>
+              <summary>Which industries do you serve?</summary>
+              <div class="muted">Manufacturing, logistics, FMCG, commercial, and select residential.</div>
+            </details>
+            <details>
+              <summary>How soon can you start?</summary>
+              <div class="muted">We begin with discovery in 2–5 days after initial contact.</div>
+            </details>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="foot">
+      <div>
+        <div class="brand" style="margin-bottom:8px">
+          <img src="Logo.jpg" class="brand-logo" alt="Description of SVG">
+          <div style="font-weight:800">QuantaNex</div>
+        </div>
+        <div class="small">Engineering Infrastructure That Thinks.</div>
+        <div class="small">© <span id="year"></span> QuantaNex Pvt. Ltd. All rights reserved.</div>
+      </div>
+      <div>
+        <div style="font-weight:700; margin-bottom:6px">Explore</div>
+        <div class="small"><a href="#about" data-route>About</a></div>
+        <div class="small"><a href="#services" data-route>Services</a></div>
+        <div class="small"><a href="#technology" data-route>Technology</a></div>
+      </div>
+      <div>
+        <div style="font-weight:700; margin-bottom:6px">Opportunities</div>
+        <div class="small"><a href="#careers" data-route>Careers</a></div>
+        <div class="small"><a href="#blog" data-route>Blog</a></div>
+        <div class="small"><a href="#manifesto" data-route>Manifesto</a></div>
+      </div>
+      <div>
+        <div style="font-weight:700; margin-bottom:6px">Contact</div>
+        <div class="small"><a href="#contact" data-route>Get in touch</a></div>
+        <div class="small"><a href="mailto:hello@quantumarc.in">adesh@quantanex.co.in</a></div>
+        <div class="small"><a href="tel:+919999999999">+91 83299 41680</a></div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Data and Scripts -->
+  <script>
+    // Router: show section by hash
+    const routes = ["home","about","services","technology","careers","blog","manifesto","contact"];
+    const titleBase = "QuantaNex — ";
+    const titles = {
+      home: "Engineering Infrastructure That Thinks",
+      about: "About",
+      services: "Services",
+      technology: "Technology",
+      careers: "Careers",
+      blog: "Blog",
+      manifesto: "Manifesto",
+      contact: "Contact"
+    };
+
+    function navigate(){
+      let hash = (location.hash || "#home").replace("#","");
+      if(!routes.includes(hash)) hash = "home";
+      document.querySelectorAll("section.page").forEach(s => s.classList.remove("active"));
+      document.getElementById(hash).classList.add("active");
+
+      // Update active nav link
+      document.querySelectorAll("[data-route]").forEach(a => {
+        const href = (a.getAttribute("href")||"").replace("#","");
+        a.classList.toggle("active", href === hash);
+      });
+
+      // Update title
+      document.title = titleBase + (titles[hash] || "QuantaNex");
+
+      // Close mobile menu if open
+      menu.classList.remove("open");
+    }
+    window.addEventListener("hashchange", navigate);
+    window.addEventListener("DOMContentLoaded", navigate);
+
+    // Mobile menu
+    const burger = document.getElementById("burger");
+    const menu = document.getElementById("menu");
+    burger.addEventListener("click", ()=> menu.classList.toggle("open"));
+
+    // Year
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Reveal on scroll
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e => {
+        if(e.isIntersecting){
+          e.target.classList.add("visible");
+          io.unobserve(e.target);
+        }
+      });
+    }, {threshold:.15});
+    document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+
+    // Simple slider factory
+    function makeSlider(id){
+      const el = document.getElementById(id);
+      if(!el) return;
+      const track = el.querySelector(".slides");
+      const slides = Array.from(el.querySelectorAll(".slide"));
+      const dots = Array.from(el.querySelectorAll(".dot"));
+      let i = 0;
+      function render(){ track.style.transform = `translateX(-${i*100}%)`; dots.forEach((d,di)=> d.classList.toggle("active", di===i)); }
+      dots.forEach((d,di)=> d.addEventListener("click", ()=>{ i=di; render(); }));
+      let timer = setInterval(()=>{ i=(i+1)%slides.length; render(); }, 5000);
+      el.addEventListener("pointerenter", ()=> clearInterval(timer));
+      el.addEventListener("pointerleave", ()=> timer = setInterval(()=>{ i=(i+1)%slides.length; render(); }, 5000));
+      render();
+    }
+    makeSlider("caseSlider");
+    makeSlider("techSlider");
+
+    // Careers data
+    const jobs = [
+      {
+        title:"Electrical Design Intern",
+        type:"Internship",
+        location:"Chhatrapati Sambhaji Nagar, MH",
+        summary:"Assist with SLDs, load calculations, and BOQs using AutoCAD.",
+        tags:["AutoCAD","BOQ","SLD"],
+        email:"careers@quantumarc.in"
+      },
+      {
+        title:"Site Engineer Trainee",
+        type:"Internship",
+        location:"On-site across Maharashtra",
+        summary:"Support installation, testing, and commissioning with QA checklists.",
+        tags:["HT/LT","Testing","Safety"],
+        email:"careers@quantumarc.in"
+      },
+      {
+        title:"Automation Engineer",
+        type:"Full-time",
+        location:"Hybrid, Maharashtra",
+        summary:"PLC/SCADA development, VFDs, sensors, and panel integration.",
+        tags:["PLC","SCADA","VFD"],
+        email:"careers@quantumarc.in"
+      }
+    ];
+    const jobsList = document.getElementById("jobsList");
+    function renderJobs(){
+      jobsList.innerHTML = jobs.map(j => `
+        <div class="card reveal">
+          <div class="muted small">${j.type} · ${j.location}</div>
+          <h3 style="margin:6px 0">${j.title}</h3>
+          <p class="muted">${j.summary}</p>
+          <div class="chips" style="margin:8px 0">
+            ${j.tags.map(t=> `<span class="chip" style="background:linear-gradient(135deg, var(--accent), #5974ff); color:#0b0f1e">${t}</span>`).join("")}
+          </div>
+          <a class="cta" href="mailto:${j.email}?subject=${encodeURIComponent(j.title)} — Application" aria-label="Apply for ${j.title}">Apply</a>
+        </div>
+      `).join("");
+      // Re-attach reveal observer for newly added cards
+      jobsList.querySelectorAll(".reveal").forEach(el => io.observe(el));
+    }
+    renderJobs();
+
+    // Blog data
+    const posts = [
+      {
+        title:"Why Intelligent Power Matters in 2025",
+        excerpt:"From rising energy costs to uptime pressure, smart infrastructure is no longer optional.",
+        tags:["Insights","Energy"],
+        date:"2025-07-15"
+      },
+      {
+        title:"From SLDs to Smart Panels: A Practical Guide",
+        excerpt:"How we go from clear drawings to reliable, data-aware systems on the floor.",
+        tags:["Engineering","How-to"],
+        date:"2025-06-28"
+      },
+      {
+        title:"Announcing Technovation Fest 2025",
+        excerpt:"Calling interdisciplinary talent to build, learn, and get hired.",
+        tags:["Events","Careers"],
+        date:"2025-08-01"
+      },
+      {
+        title:"PLC Migrations Without Downtime",
+        excerpt:"Phased strategies, IO mapping, and dry runs that protect throughput.",
+        tags:["Automation","How-to"],
+        date:"2025-05-12"
+      }
+    ];
+    const blogList = document.getElementById("blogList");
+    const blogFilters = document.getElementById("blogFilters");
+    const blogSearch = document.getElementById("blogSearch");
+
+    const allTags = Array.from(new Set(posts.flatMap(p => p.tags))).sort();
+    let activeTag = "All";
+
+    function renderFilters(){
+      blogFilters.innerHTML = ["All", ...allTags].map(t => `
+        <button class="pill ${t===activeTag?"active":""}" data-tag="${t}" aria-pressed="${t===activeTag}">${t}</button>
+      `).join("");
+      blogFilters.querySelectorAll("[data-tag]").forEach(btn=>{
+        btn.addEventListener("click", ()=>{
+          activeTag = btn.getAttribute("data-tag");
+          renderPosts();
+          renderFilters();
+        });
+      });
+    }
+
+    function renderPosts(){
+      const q = (blogSearch.value || "").toLowerCase();
+      let filtered = posts.filter(p => (activeTag==="All" || p.tags.includes(activeTag)));
+      if(q){
+        filtered = filtered.filter(p => p.title.toLowerCase().includes(q) || p.excerpt.toLowerCase().includes(q));
+      }
+      filtered.sort((a,b)=> new Date(b.date) - new Date(a.date));
+      blogList.innerHTML = filtered.map(p => `
+        <article class="card reveal">
+          <div class="muted small">${new Date(p.date).toLocaleDateString()}</div>
+          <h3 style="margin:6px 0">${p.title}</h3>
+          <p class="muted">${p.excerpt}</p>
+          <div class="chips" style="margin:8px 0">
+            ${p.tags.map(t=> `<span class="chip" style="background:linear-gradient(135deg, var(--accent), #5974ff); color:#0b0f1e">${t}</span>`).join("")}
+          </div>
+        </article>
+      `).join("");
+      blogList.querySelectorAll(".reveal").forEach(el => io.observe(el));
+    }
+    renderFilters();
+    renderPosts();
+    blogSearch.addEventListener("input", renderPosts);
+
+    // Contact form (no backend) — simple validation + mailto fallback
+    const form = document.getElementById("contactForm");
+    const formStatus = document.getElementById("formStatus");
+    form.addEventListener("submit", (e)=>{
+      e.preventDefault();
+      const data = new FormData(form);
+      const name = data.get("name")?.trim();
+      const email = data.get("email")?.trim();
+      const topic = data.get("topic");
+      const phone = data.get("phone")?.trim();
+      const message = data.get("message")?.trim();
+
+      if(!name || !email || !message){
+        formStatus.textContent = "Please fill in name, email, and message.";
+        formStatus.className = "small error";
+        return;
+      }
+
+      const mailto = `mailto:hello@quantumarc.in?subject=${encodeURIComponent(`[${topic}] ${name}`)}&body=${encodeURIComponent(
+`Name: ${name}
+Email: ${email}
+Phone: ${phone || "-"}
+Topic: ${topic}
+
+${message}
+`)}`;
+      window.location.href = mailto;
+      formStatus.textContent = "Opening your email client…";
+      formStatus.className = "small success";
+      form.reset();
+    });
+  </script>
+</body>
+  
+</html>
